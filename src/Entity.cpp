@@ -5,6 +5,7 @@ Entity::Entity()
 {
 	health = 100;
 	std::string e = "Entity";
+	entityColor.set(155, 0, 55);
 	//nums aleatorios
 	std::random_device randomizer;
 	std::mt19937 gen(randomizer());
@@ -22,6 +23,6 @@ const char* Entity::toString()
 
 void Entity::draw()
 {
-	ofSetColor(240, 240, 240);
+	ofSetColor(entityColor);
 	ofCircle(position->x, position->y, 25);
 }

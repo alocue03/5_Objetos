@@ -20,6 +20,7 @@ public:
 	void draw();
 
 	float posX, posY;
+	ofColor entityColor;
 };
 
 //template<>
