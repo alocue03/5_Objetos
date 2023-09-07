@@ -44,19 +44,21 @@ void ofApp::setupPelotas()
 	e2.position->y = 200;
 	e2.Velocity->x = 50;
 	gameObjects.push_back(Entity(e2));
+
 	std::cout << gameObjects.size() << "\n";
 	imgHogar.load("house.png");
 }
 
 void ofApp::setupLemmings()
 {
-	posx = 0;
-	posy = 0;
+	posx = 50;
+	posy = 50;
 	radioCirculo = 25;
-	playerSrpiteImg.load("Player.png");
+	//cargar el jugador
+	playerSrpiteImg.load("Player1.png");
 	//tamaño del jugador
-	playerSize = ofVec2f(171, 233);
-	playerSpriteOffset = ofVec2f(290, 273);
+	playerSize = ofVec2f(195, 243);
+	playerSpriteOffset = ofVec2f(10, 23);
 	//inventory
 	Entity hands = Entity();
 	hands.name = "Manos";
@@ -68,7 +70,10 @@ void ofApp::setupLemmings()
 	Halbred.name = "Halbred";
 	inventory.push_back(Halbred);
 
-	currItem = &hands;
+	inventoryIterator = inventory.begin(); //inicializar le iterador
+	//currItem = &inventory.back();  //back obtiene el ultimo item
+	std::cout << "begin: " << (*inventoryIterator).name << "\n";
+
 }
 
 //--------------------------------------------------------------
@@ -120,26 +125,26 @@ void ofApp::updateLemmings()
 	if (w)
 	{
 		posy -= 200 * ofGetLastFrameTime();
-		playerSpriteOffset = ofVec2f(300, 18);
-		playerSize = ofVec2f(160, 233);
+		playerSpriteOffset = ofVec2f(10, 294);
+		playerSize = ofVec2f(195, 243);
 	}
 	if (s)
 	{
 		posy += 200 * ofGetLastFrameTime();
-		playerSpriteOffset = ofVec2f(290, 273);
-		playerSize = ofVec2f(171, 233);
+		playerSize = ofVec2f(195, 243);
+		playerSpriteOffset = ofVec2f(10, 23);
 	}
 	if (a)
 	{
 		posx -= 200 * ofGetLastFrameTime();
-		playerSpriteOffset = ofVec2f(59, 270);
-		playerSize = ofVec2f(146, 232);
+		playerSize = ofVec2f(147, 244);
+		playerSpriteOffset = ofVec2f(10, 581);
 	}
 	if (d)
 	{
 		posx += 200 * ofGetLastFrameTime();
-		playerSpriteOffset = ofVec2f(560, 273);
-		playerSize = ofVec2f(146, 232);
+		playerSize = ofVec2f(149, 249);
+		playerSpriteOffset = ofVec2f(46, 863);
 	}
 
 }
@@ -171,18 +176,49 @@ void ofApp::draw(){
 		ofSetColor(0, 0, 0);
 		titleFont.drawString("what do the numbers mean? mason", 100, 100);
 		ofSetColor(255, 255, 255);
-		//ofCircle(posx, posy, radioCirculo);
-		//playerSrpiteImg.draw(posx,posy);
+
 		playerSrpiteImg.drawSubsection(posx, posy, playerSize.x, 
 			playerSize.y, playerSpriteOffset.x, 
 			playerSpriteOffset.y);
 		//poner el nombre del item actual
 		ofSetColor(255, 255, 0);
-		titleFont.drawString(currItem->name, posx, posy);
+		uiFont.drawString((*inventoryIterator).name.c_str(), posx, posy);
 	}
 
 }
 
+void ofApp::PrevItem()
+{
+	//si estamos en el inicio de la lista, ir al final
+
+	if (inventoryIterator == inventory.begin())
+	{
+		puts("inicio, moviendo al final");
+		inventoryIterator = inventory.end();
+		--inventoryIterator;
+	}
+	else
+	{
+		--inventoryIterator;
+		if (inventoryIterator == inventory.begin())
+		{
+			puts("llegando al inicio");
+		}
+	}
+
+	//inventoryIterator = inventory.begin();
+	std::cout << "item: " << (*inventoryIterator).name << "\n";
+}
+void ofApp::NextItem()
+{
+	++inventoryIterator;
+	if (inventoryIterator == inventory.end())
+	{
+		inventoryIterator = inventory.begin();
+	}
+
+	std::cout << "item: " << (*inventoryIterator).name << "\n";
+}
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key)
 {

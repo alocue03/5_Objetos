@@ -63,6 +63,8 @@ class ofApp : public ofBaseApp{
 		bool w, a, s, d;
 		//inventario, es una lista ligada
 		std::list<Entity> inventory;
-		Entity* currItem;
+		void NextItem();
+		void PrevItem();
+		std::list<Entity>::iterator inventoryIterator;
 
 };
