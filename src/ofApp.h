@@ -6,6 +6,11 @@
 #include "ofxGui.h"
 #include <list> //std::list lista ligada
 
+struct ItemSpawn {
+	Entity itemsEntities; 
+	float spawnTime; 
+};
+
 class ofApp : public ofBaseApp{
 
 	public:
@@ -15,8 +20,10 @@ class ofApp : public ofBaseApp{
 		void update();
 		void updatePelotas();
 		void updateLemmings();
-
 		void draw();
+
+		void SpawnItem();
+
 
 		void keyPressed(int key);
 		void keyReleased(int key);
@@ -38,6 +45,8 @@ class ofApp : public ofBaseApp{
 		float radioCirculo;
 
 		std::vector<Entity> gameObjects;
+		std::list<ItemSpawn> activeItems;
+
 
 		//imagen de fondo
 		ofImage imgHogar;
@@ -63,8 +72,24 @@ class ofApp : public ofBaseApp{
 		bool w, a, s, d;
 		//inventario, es una lista ligada
 		std::list<Entity> inventory;
-		void NextItem();
-		void PrevItem();
-		std::list<Entity>::iterator inventoryIterator;
+
+		Entity* currentItem;
+
+		int animationnumber = 0;
+		float animationchange = 0.0f;
+		float animationFast = 6.5f;
+		char ultDire = 0;
+
+		int weaponIndex = 0;
+		int weaponMin = 0;
+		int weaponMax = 2;
+		float lastSpawnTime;
+
+		Entity lance;
+		Entity flail;
+		Entity olympia;
+
+		//void NextItem();
+		//void PrevItem();
 
 };

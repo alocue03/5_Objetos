@@ -62,17 +62,33 @@ void ofApp::setupLemmings()
 	//inventory
 	Entity hands = Entity();
 	hands.name = "Manos";
+	hands.sprite.load("");
 	inventory.push_back(hands);
 	Entity Espada = Entity();
 	Espada.name = "Espada";
+	Espada.sprite.load("Espada.png");
 	inventory.push_back(Espada);
 	Entity Halbred = Entity();
 	Halbred.name = "Halbred";
+	Halbred.sprite.load("halbred.png");
 	inventory.push_back(Halbred);
+	currentItem = &hands;
 
-	inventoryIterator = inventory.begin(); //inicializar le iterador
+
+	//inventoryIterator = inventory.begin(); //inicializar le iterador
 	//currItem = &inventory.back();  //back obtiene el ultimo item
-	std::cout << "begin: " << (*inventoryIterator).name << "\n";
+	//std::cout << "begin: " << (*inventoryIterator).name << "\n";
+
+	lance.sprite.load("Lance.png");
+	lance.name = "Lanza";
+
+	flail.sprite.load("Flail.png");
+	flail.name = "Flail";
+
+	olympia.sprite.load("Olympia.png");
+	olympia.name = "Olympia gang";
+
+	lastSpawnTime = ofGetElapsedTimef();
 
 }
 
@@ -124,30 +140,127 @@ void ofApp::updateLemmings()
 	//mover el sprite dependiendo de los inputs
 	if (w)
 	{
+		if (ultDire != 'w') {
+			animationnumber = 0;
+			ultDire = 'w';
+		}
 		posy -= 200 * ofGetLastFrameTime();
-		playerSpriteOffset = ofVec2f(10, 294);
-		playerSize = ofVec2f(195, 243);
+		switch ((int)animationnumber) {
+		case 0: playerSpriteOffset = ofVec2f(10, 294); break;
+		case 1: playerSpriteOffset = ofVec2f(254, 294); break;
+		case 2: playerSpriteOffset = ofVec2f(523, 294); break;
+		}
 	}
 	if (s)
 	{
+		if (ultDire != 's') 
+		{
+			animationnumber = 0;
+			ultDire = 's';
+		}
 		posy += 200 * ofGetLastFrameTime();
-		playerSize = ofVec2f(195, 243);
-		playerSpriteOffset = ofVec2f(10, 23);
+		switch ((int)animationnumber) {
+		case 0: playerSpriteOffset = ofVec2f(10, 23); break;
+		case 1: playerSpriteOffset = ofVec2f(253, 23); break;
+		case 2: playerSpriteOffset = ofVec2f(502, 23); break;
+		}
 	}
 	if (a)
 	{
+		if (ultDire != 'a') 
+		{
+			animationnumber = 0;
+			ultDire = 'a';
+		}
 		posx -= 200 * ofGetLastFrameTime();
-		playerSize = ofVec2f(147, 244);
-		playerSpriteOffset = ofVec2f(10, 581);
+		switch ((int)animationnumber) {
+		case 0: playerSpriteOffset = ofVec2f(10, 581); break;
+		case 1: playerSpriteOffset = ofVec2f(262, 581); break;
+		case 2: playerSpriteOffset = ofVec2f(509, 581); break;
+		}
 	}
 	if (d)
 	{
+		if (ultDire != 'd') 
+		{
+			animationnumber = 0;
+			ultDire = 'd';
+		}
 		posx += 200 * ofGetLastFrameTime();
-		playerSize = ofVec2f(149, 249);
-		playerSpriteOffset = ofVec2f(46, 863);
+		switch ((int)animationnumber) {
+		case 0: playerSpriteOffset = ofVec2f(46, 863); break;
+		case 1: playerSpriteOffset = ofVec2f(286, 863); break;
+		case 2: playerSpriteOffset = ofVec2f(530, 863); break;
+		}
 	}
 
+	if (w ^ a ^ s ^ d)
+		animationchange += animationFast * ofGetLastFrameTime();
+	if (animationchange >= 3) 
+		animationchange = 0;
+	if (animationchange > 0 && animationchange < 1)
+		animationnumber = 0;
+	if (animationchange > 1 && animationchange < 2)
+		animationnumber = 1;
+	if (animationchange > 2 && animationchange < 3)
+		animationnumber = 2;
+	if (animationchange >= 3)
+		animationnumber = 3;
+
+	if (animationnumber >= 3) animationnumber = 0;
+
+	if (weaponIndex < weaponMin)
+		weaponIndex = weaponMax;
+	if (weaponIndex > weaponMax)
+		weaponIndex = weaponMin;
+
+	std::list<Entity>::iterator it = inventory.begin();
+	if (weaponIndex == 0 && it != inventory.end()) {
+		currentItem = &(*it);
+	}
+	else if (weaponIndex == 1 && std::next(it) != inventory.end()) {
+		currentItem = &(*std::next(it));
+	}
+	else if (weaponIndex == 2 && std::next(it, 2) != inventory.end()) {
+		currentItem = &(*std::next(it, 2));
+	}
+	else if (weaponIndex == 3 && std::next(it, 3) != inventory.end()) {
+		currentItem = &(*std::next(it, 3));
+	}
+	else if (weaponIndex == 4 && std::next(it, 4) != inventory.end()) {
+		currentItem = &(*std::next(it, 4));
+	}
+	else if (weaponIndex == 5 && std::next(it, 5) != inventory.end()) {
+		currentItem = &(*std::next(it, 5));
+	}
+
+	float currentTime = ofGetElapsedTimef();
+	float spawnInterval = 5.0f;
+
+	if (currentTime - lastSpawnTime > spawnInterval) {
+		SpawnItem();
+		lastSpawnTime = currentTime;
+	}
+
+	for (auto it = activeItems.begin(); it != activeItems.end(); ) {
+		if (currentTime >= it->spawnTime) {
+			float distance = ofDist(it->itemsEntities.posX, it->itemsEntities.posY, posx, posy);
+			if (distance < radioCirculo) {
+				inventory.push_back(it->itemsEntities);
+				if (weaponMax < 6)
+					weaponMax++;
+				it = activeItems.erase(it);
+			}
+			else {
+				++it;
+			}
+		}
+		else {
+			++it;
+		}
+	}
 }
+
 
 //--------------------------------------------------------------
 void ofApp::draw(){
@@ -176,49 +289,69 @@ void ofApp::draw(){
 		ofSetColor(0, 0, 0);
 		titleFont.drawString("what do the numbers mean? mason", 100, 100);
 		ofSetColor(255, 255, 255);
-
 		playerSrpiteImg.drawSubsection(posx, posy, playerSize.x, 
 			playerSize.y, playerSpriteOffset.x, 
 			playerSpriteOffset.y);
-		//poner el nombre del item actual
-		ofSetColor(255, 255, 0);
-		uiFont.drawString((*inventoryIterator).name.c_str(), posx, posy);
-	}
-
-}
-
-void ofApp::PrevItem()
-{
-	//si estamos en el inicio de la lista, ir al final
-
-	if (inventoryIterator == inventory.begin())
-	{
-		puts("inicio, moviendo al final");
-		inventoryIterator = inventory.end();
-		--inventoryIterator;
-	}
-	else
-	{
-		--inventoryIterator;
-		if (inventoryIterator == inventory.begin())
-		{
-			puts("llegando al inicio");
+		titleFont.drawString(currentItem == nullptr ? "NULL" : currentItem->name.c_str(), posx, posy);
+		if (currentItem && currentItem->sprite.isAllocated())
+			currentItem->sprite.draw(posx + 25, posy);
+		for (auto& itemSpawn : activeItems) {
+			float currentTime = ofGetElapsedTimef();
+			if (currentTime >= itemSpawn.spawnTime) {
+				itemSpawn.itemsEntities.sprite.draw(itemSpawn.itemsEntities.posX, itemSpawn.itemsEntities.posY);
+			}
 		}
 	}
-
-	//inventoryIterator = inventory.begin();
-	std::cout << "item: " << (*inventoryIterator).name << "\n";
 }
-void ofApp::NextItem()
+void ofApp::SpawnItem()
 {
-	++inventoryIterator;
-	if (inventoryIterator == inventory.end())
-	{
-		inventoryIterator = inventory.begin();
-	}
+	std::vector<Entity> items = { lance, flail, olympia };
 
-	std::cout << "item: " << (*inventoryIterator).name << "\n";
+	int randomIndex = ofRandom(items.size());
+	Entity selectedItem = items[randomIndex];
+
+	selectedItem.posX = ofRandom(ofGetWidth());
+	selectedItem.posY = ofRandom(ofGetHeight());
+
+	ItemSpawn newItem;
+	newItem.itemsEntities = selectedItem;
+	newItem.spawnTime = ofGetElapsedTimef() + ofRandom(3, 10);
+
+	activeItems.push_back(newItem);
 }
+
+//void ofApp::PrevItem()
+//{
+//	//si estamos en el inicio de la lista, ir al final
+//
+//	if (inventoryIterator == inventory.begin())
+//	{
+//		puts("inicio, moviendo al final");
+//		inventoryIterator = inventory.end();
+//		--inventoryIterator;
+//	}
+//	else
+//	{
+//		--inventoryIterator;
+//		if (inventoryIterator == inventory.begin())
+//		{
+//			puts("llegando al inicio");
+//		}
+//	}
+//
+//	//inventoryIterator = inventory.begin();
+//	std::cout << "item: " << (*inventoryIterator).name << "\n";
+//}
+//void ofApp::NextItem()
+//{
+//	++inventoryIterator;
+//	if (inventoryIterator == inventory.end())
+//	{
+//		inventoryIterator = inventory.begin();
+//	}
+//
+//	std::cout << "item: " << (*inventoryIterator).name << "\n";
+//}
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key)
 {
@@ -232,10 +365,12 @@ void ofApp::keyPressed(int key)
 		if (key == 57357)
 		{
 			std::cout << "item anterior" << key << "\n";
+			weaponIndex++;
 		}
 		if (key == 57359)
 		{
 			std::cout << "item que sigue" << key << "\n";
+			weaponIndex--;
 		}
 	}
 }

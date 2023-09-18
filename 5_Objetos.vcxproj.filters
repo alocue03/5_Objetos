@@ -52,13 +52,13 @@
 			<UniqueIdentifier>{d8376475-7454-4a24-b08a-aac121d3ad6f}</UniqueIdentifier>
 		</Filter>
 		<Filter Include="addons">
-			<UniqueIdentifier>{71834F65-F3A9-211E-73B8-DC85}</UniqueIdentifier>
+			<UniqueIdentifier>{50535717--35B-D-45-AE-B-9ED-2F8FD8879280}</UniqueIdentifier>
 		</Filter>
 		<Filter Include="addons\ofxGui">
-			<UniqueIdentifier>{4F2A59AF-5F4E-704B-D067-EC13}</UniqueIdentifier>
+			<UniqueIdentifier>{598C88AC--AA6-5-47-7E-A-338-82D905B13F6F}</UniqueIdentifier>
 		</Filter>
 		<Filter Include="addons\ofxGui\src">
-			<UniqueIdentifier>{645E9533-4DCD-6179-1CDF-CB65}</UniqueIdentifier>
+			<UniqueIdentifier>{90C7AD41--BDC-4-41-72-8-B55-E2B85C0D3157}</UniqueIdentifier>
 		</Filter>
 	</ItemGroup>
 	<ItemGroup>

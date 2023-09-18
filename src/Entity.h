@@ -1,7 +1,7 @@
 #pragma once
+#include "ofMain.h"
 #include <string>
 #include <random>
-#include "ofMain.h"
 //#include "GenericArray.h"
 
 class Entity
@@ -17,10 +17,11 @@ public:
 	ofVec2f* position;
 	ofVec2f* Velocity;
 
-	void draw();
-
 	float posX, posY;
 	ofColor entityColor;
+	ofImage sprite;
+
+	void draw();
 };
 
 //template<>
